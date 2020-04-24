@@ -1,0 +1,26 @@
+{
+	"name": "vitus/php-error-log-viewer",
+	"description": "A single-file GUI for your php log files which groups similar errors. Written in PHP and Vue.js.",
+	"keywords": [
+		"log",
+		"logs",
+		"error",
+		"errors",
+		"gui",
+		"vue",
+		"single-file",
+		"dev",
+		"helper"
+	],
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "schuhwerk",
+			"email": "vitus.schuhwerk@gmail.com"
+		}
+	],
+	"minimum-stability": "stable",
+	"require": {
+		"php": "^7.2"
+	}
+}
