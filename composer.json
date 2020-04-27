@@ -1,5 +1,5 @@
 {
-	"name": "vitus/php-error-log-viewer",
+	"name": "schuhwerk/php-error-log-viewer",
 	"description": "A single-file GUI for your php log files which groups similar errors. Written in PHP and Vue.js.",
 	"keywords": [
 		"log",
@@ -19,7 +19,6 @@
 			"email": "vitus.schuhwerk@gmail.com"
 		}
 	],
-	"minimum-stability": "stable",
 	"require": {
 		"php": "^7.1"
 	}
