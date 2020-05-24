@@ -1,11 +1,10 @@
 # PHP Error Log Viewer
 
 A single-file GUI for your php log files which groups similar errors. Written in PHP and Vue.js.
-It can be configured to
 
- - It reads the specified log file and automatically shows you new errors when they appear.
- - It groups same errors
- - klicking on an error will directly bring you to vscode ( in most cases, if you configure it correctly :))
+ - Reads the specified log file and automatically shows you new errors when they appear.
+ - Groups errors with similar text
+ - Can be configured so clicking on an error will directly bring you to vscode.
 
 ## Disclamer
  - This contains code for deleting your log-file.
