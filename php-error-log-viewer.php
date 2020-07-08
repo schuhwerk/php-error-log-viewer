@@ -409,6 +409,7 @@ var app = new Vue({
 	.loader.visible { transition: opacity 0s; opacity: 1 }
 	.md-content { max-height: unset !important; min-height: 80vh; max-width: 98vw;}
 	.md-card { height: calc(100% - 15px); overflow: hidden; }
+	#app>.md-table {flex-flow: column;}
 	.md-table-cell[error*="Warning"] { background-color: #FFA66F; }
 	.md-table-cell[error*="Fatal"], .md-table-cell[error*="error"] { background-color: #d05f5f !important}
 	pre { font-family: 'Roboto Mono', monospace; margin: 0.2rem }
