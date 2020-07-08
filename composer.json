@@ -12,6 +12,7 @@
 		"dev",
 		"helper"
 	],
+	"homepage": "https://github.com/schuhwerk/php-error-log-viewer",
 	"license": "MIT",
 	"authors": [
 		{
