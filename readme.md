@@ -33,11 +33,11 @@ You can specify settings in a file named 'php-error-log-viewer.ini' in the same 
 
 ```ini
 ;path the the log file. relative to the viewer file.
-file_path='../../../app/debug.log'
+file_path='../../app/debug.log'
 ;toggle the linking feature
 vscode_links=true
 ;when you run a virtual machine for development your server path might diverge from your loacal path. this is server.
 vscode_path_search='/srv/www/current/'
 ;
-vscode_path_replace='C:\my-repository\'
+vscode_path_replace='C:/my-repository/'
 ```

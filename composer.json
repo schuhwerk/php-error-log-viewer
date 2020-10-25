@@ -23,5 +23,9 @@
 	"require": {
 		"php": "^7.1"
 	},
+	"support": {
+		"issues": "https://github.com/schuhwerk/php-error-log-viewer/issues",
+		"source": "https://github.com/schuhwerk/php-error-log-viewer"
+	},
 	"type": "development-tool"
 }

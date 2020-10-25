@@ -407,9 +407,8 @@ var app = new Vue({
 	#app { padding: 0 10px; }
 	.loader {transition: opacity 1s; opacity: 0;}
 	.loader.visible { transition: opacity 0s; opacity: 1 }
-	.md-content { max-height: unset !important; min-height: 80vh; max-width: 98vw;}
-	.md-card { height: calc(100% - 15px); overflow: hidden; }
-	#app>.md-table {flex-flow: column;}
+	.md-card { height: calc(100% - 15px); min-width: 90vw; }
+	.md-content { max-height: unset !important; height: calc(100vh - 15px); max-width: 100%; }
 	.md-table-cell[error*="Warning"] { background-color: #FFA66F; }
 	.md-table-cell[error*="Fatal"], .md-table-cell[error*="error"] { background-color: #d05f5f !important}
 	pre { font-family: 'Roboto Mono', monospace; margin: 0.2rem }
