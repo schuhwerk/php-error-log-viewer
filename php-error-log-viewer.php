@@ -293,7 +293,7 @@ class Pelv_Log_Handler {
 		<md-table-row slot="md-table-row" slot-scope="{ item }">
 			<!-- <md-table-cell md-label="ID" md-sort-by="id" md-numeric>{{ item.id }}</md-table-cell> -->
 			<md-table-cell :error="item.cls" md-label="Count" md-sort-by="cnt">{{ item.cnt }}</md-table-cell>
-			<md-table-cell :error="item.cls" style="min-width:140px" md-label="Time" md-sort-by="t">{{ item.time }}</md-table-cell>
+			<md-table-cell :error="item.cls" style="min-width:140px" md-label="Time" md-sort-by="time">{{ item.time }}</md-table-cell>
 			<!-- <md-table-cell :error="item.cls" md-label="cls" md-sort-by="cls">{{ item.cls }}</md-table-cell> -->
 			<md-table-cell class="message" md-label="Message" md-sort-by="msg" ><pre v-html="item.msg">{{ item.msg }}</pre></md-table-cell>
 		</md-table-row>
