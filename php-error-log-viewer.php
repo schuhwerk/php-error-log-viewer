@@ -150,7 +150,8 @@ class Pelv_Log_Handler {
 
 	public function vscode_link_filter( $matches ) {
 		$link = 'vscode://file/' . $matches[1] . $matches[2] . ':' . $matches[3];
-		$val  = parse_url( $_SERVER['HTTP_REFERER'], PHP_URL_QUERY );
+		$root = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : $_SERVER['DOCUMENT_ROOT'];
+		$val  = parse_url( $root, PHP_URL_QUERY );
 		parse_str( $val, $get_array );
 		$link = str_replace( $this->settings['vscode_path_search'], $this->settings['vscode_path_replace'], $link );
 		return "<a href='$link'>" . $matches[0] . '</a>';
