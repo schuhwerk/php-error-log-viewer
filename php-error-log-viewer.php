@@ -170,7 +170,7 @@ class Pelv_Log_Handler {
 	 * @return void
 	 */
 	public function replace_callback( $arr ) {
-		$err_id = crc32( $arr[2] ); // create a unique identifier for the error message.
+		$err_id = crc32( trim( $arr[2] ) ); // create a unique identifier for the error message.
 		if ( ! isset( $this->content[ $err_id ] ) ) { // we have a new error.
 			$this->content[ $err_id ]        = array();
 			$this->content[ $err_id ]['id']  = $err_id; // err_id.
