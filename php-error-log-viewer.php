@@ -88,7 +88,7 @@ class Pelv_Log_Handler {
 			return;
 		}
 		$log_file_valid = $this->is_file_valid();
-		if ( true !== $log_file_valid ) {
+		if ( ! $log_file_valid ) {
 			$this->ajax_header();
 			echo $log_file_valid;
 			die();
@@ -179,11 +179,10 @@ class Pelv_Log_Handler {
 		} else { // we already have that error...
 			$this->content[ $err_id ]['cnt']++; // counter.
 		}
-		$time                             = preg_replace( '/-[0-9]{4}/', '', $arr[1] ); // strip year.
-		$time                             = preg_replace( '/:[0-9]{2} .*/', '', $time ); // strip seconds + timezone.
-		$this->content[ $err_id ]['time'] = $time; // time.
 
-		$message                         = htmlspecialchars( trim( $arr[2] ), ENT_QUOTES );
+		$date = date_create( $arr[1] ); // false if no valid date.
+		$this->content[ $err_id ]['time'] = $date ? $date->format( DateTime::ATOM ) : $arr[1]; // ISO8601, readable in js
+		$message = htmlspecialchars( trim( $arr[2] ), ENT_QUOTES );
 		$this->content[ $err_id ]['msg'] = $this->settings['vscode_links'] ? $this->link_vscode_files( $message ) : $message;
 		$this->content[ $err_id ]['cls'] = implode(
 			' ',
@@ -193,7 +192,6 @@ class Pelv_Log_Handler {
 				2
 			)
 		); // the first few words of the message become class items.
-
 	}
 
 	public function delete() {
@@ -292,10 +290,10 @@ class Pelv_Log_Handler {
 			:md-description="`The file has a size of ${ readableFilesize() }`">
 		</md-table-empty-state>
 		<md-table-row slot="md-table-row" slot-scope="{ item }">
-			<!-- <md-table-cell md-label="ID" md-sort-by="id" md-numeric>{{ item.id }}</md-table-cell> -->
 			<md-table-cell :error="item.cls" md-label="Count" md-sort-by="cnt">{{ item.cnt }}</md-table-cell>
-			<md-table-cell :error="item.cls" style="min-width:140px" md-label="Time" md-sort-by="time">{{ item.time }}</md-table-cell>
-			<!-- <md-table-cell :error="item.cls" md-label="cls" md-sort-by="cls">{{ item.cls }}</md-table-cell> -->
+			<md-table-cell :error="item.cls" style="min-width:140px" md-label="Time" md-sort-by="time">
+				<time :datetime="item.time">{{ readableDateTime(item.time) }}</time>
+			</md-table-cell>
 			<md-table-cell class="message" md-label="Message" md-sort-by="msg" ><pre v-html="item.msg">{{ item.msg }}</pre></md-table-cell>
 		</md-table-row>
 	</md-table>
@@ -343,6 +341,10 @@ var app = new Vue({
 				return (Math.round(this.filesize /102 ) /10) + ' KB';
 			}
 
+		},
+		readableDateTime( dateTimeString ){
+			let date = new Date(dateTimeString);
+			return isNaN( date ) ? dateTimeString : date.toLocaleString();
 		},
 		searchOnTable () {
 			if ( this.search == "" ){
