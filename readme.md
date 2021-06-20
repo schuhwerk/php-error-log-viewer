@@ -13,7 +13,7 @@ A single-file GUI for your php log files which groups similar errors. Written in
  - It is meant for development-environments.
  - Created for log-files in the format ``[31-Mar-2021 14:25:56 UTC] PHP Notice: ...``
  - There is still room for improvement (especially where the log-file is parsed).
-
+ - It does not work offline, as we rely on [cdns](https://en.wikipedia.org/wiki/Content_delivery_network) to load dependencies like vue. 
 
 ## Getting Started
 
