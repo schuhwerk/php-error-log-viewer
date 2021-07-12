@@ -21,7 +21,7 @@
 		}
 	],
 	"require": {
-		"php": "^7.1"
+		"php": "^7.1||^7.4||^8.0"
 	},
 	"support": {
 		"issues": "https://github.com/schuhwerk/php-error-log-viewer/issues",
