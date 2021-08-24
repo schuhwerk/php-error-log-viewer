@@ -44,3 +44,12 @@ vscode_path_search='/srv/www/current/'
 ;
 vscode_path_replace='C:/my-repository/'
 ```
+
+## Linking
+The log viewer extracts paths and line numbers from your log file (transforms them) and creates vscode links.
+It works for the following samples:
+
+- <mark>/srv/www/web/app/themes/defaultspace/functions.php(605)</mark>: get_post_card(Object(WP_Post), Array)
+- PHP Fatal error:  Uncaught TypeError: ..., called in <mark>C:\foo\bar/themes/defaultspace/functions.php on line 605</mark> 
+- ... and defined in <mark>C:\foo\bar/themes/defaultspace/functions.php:63</mark>
+

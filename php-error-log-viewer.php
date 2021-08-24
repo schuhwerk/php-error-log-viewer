@@ -143,8 +143,7 @@ class Pelv_Log_Handler {
 	}
 
 	public function link_vscode_files( $string ) {
-		$string = preg_replace_callback( ' $([A-Z]:)?([\\\/][^:()]+)[:\(]([0-9]+)\)?$', array( $this, 'vscode_link_filter' ), $string );
-		$string = preg_replace_callback( ' $([A-Z]:)?([\\\/][^:()]+) on line ([0-9]+)\)?$', array( $this, 'vscode_link_filter' ), $string );
+		$string = preg_replace_callback( '$([A-Z]:)?([\\\/][^:(\s]+)(?: on line |[:\(])([0-9]+)\)?$', array( $this, 'vscode_link_filter' ), $string );
 		return $string;
 	}
 
@@ -175,7 +174,7 @@ class Pelv_Log_Handler {
 			$this->content[ $err_id ]        = array();
 			$this->content[ $err_id ]['id']  = $err_id; // err_id.
 			$this->content[ $err_id ]['cnt'] = 1; // counter.
-			$this->index[] = $err_id;
+			$this->index[]                   = $err_id;
 		} else { // we already have that error...
 			$this->content[ $err_id ]['cnt']++; // counter.
 		}
