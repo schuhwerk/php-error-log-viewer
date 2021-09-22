@@ -5,7 +5,7 @@ A single-file GUI for your php log files which groups similar errors. Written in
  - Reads the specified log file and automatically shows you new errors when they appear.
  - Groups errors with similar text. This is far from perfect and just works with the (default) log-format like:  
    ```[12-Jun-2030 12:58:55] PHP Notice: ...```
- - Can be configured so clicking on an error will directly [bring you to the mentioned file and line in vscode](https://code.visualstudio.com/docs/editor/command-line#_opening-vs-code-with-urls).
+ - Can be configured so clicking on an error will directly bring you to the mentioned file and line in vscode ([more below](#linking)).
 
 ## Disclaimer
  - This contains code for deleting your log-file.
@@ -46,8 +46,8 @@ vscode_path_replace='C:/my-repository/'
 ```
 
 ## Linking
-The log viewer extracts paths and line numbers from your log file (transforms them) and creates vscode links.
-It works for the following samples:
+The log viewer extracts paths and line numbers from your log file (transforms them) and creates [vscode links](https://code.visualstudio.com/docs/editor/command-line#_opening-vs-code-with-urls).
+This works for the following samples:
 
 - <mark>/srv/www/web/app/themes/defaultspace/functions.php(605)</mark>: get_post_card(Object(WP_Post), Array)
 - PHP Fatal error:  Uncaught TypeError: ..., called in <mark>C:\foo\bar/themes/defaultspace/functions.php on line 605</mark> 
