@@ -62,7 +62,6 @@ class Pelv_Log_Handler {
 		'vscode_links'        => true, // Stack trace references files. link them to your repo (https://code.visualstudio.com/docs/editor/command-line#_opening-vs-code-with-urls).
 		'vscode_path_search'  => '', // This is needed if you develop on a vm. like '/srv/www/...'.
 		'vscode_path_replace' => '', // The local path to your repo. like 'c:/users/...'.
-		// 'password'            => '',
 	);
 
 	public function __construct( $settings ) {
@@ -172,7 +171,8 @@ class Pelv_Log_Handler {
 	 *
 	 * @param array $arr
 	 * looks like that:
-	 * array (  0   =>  [01-Jun-2016 09:24:02 UTC] PHP Fatal error:  Allowed memory size of 456 bytes exhausted (tried to allocate 27 bytes) in ...
+	 * array (
+	 *      0   =>  [01-Jun-2016 09:24:02 UTC] PHP Fatal error:  Allowed memory size of 456 bytes exhausted (tried to allocate 27 bytes) in ...
 	 *      1   =>  [01-Jun-2016 09:24:02 UTC]
 	 *      2   =>  PHP Fatal error:  Allowed memory size of 56 bytes exhausted (tried to allocate 15627 bytes) in ... *
 	 * )
@@ -184,7 +184,7 @@ class Pelv_Log_Handler {
 			$this->content[ $err_id ]        = array();
 			$this->content[ $err_id ]['id']  = $err_id; // err_id.
 			$this->content[ $err_id ]['cnt'] = 1; // counter.
-			$this->index[]                   = $err_id;
+			$this->index[] = $err_id;
 		} else { // we already have that error...
 			$this->content[ $err_id ]['cnt']++; // counter.
 		}
@@ -265,17 +265,16 @@ class Pelv_Log_Handler {
 <body>
 <div id="app">
 	<div class="loader" v-bind:class="{'visible': loading }">
-		<md-progress-bar  md-mode="query"></md-progress-bar>
+		<md-progress-bar md-mode="query"></md-progress-bar>
 	</div>
-	<md-table v-model="searched" md-sort="cnt" md-sort-order="asc" md-card md-fixed-header>
+	<md-table v-model="rowsDisplay" :md-sort.sync="currentSort" :md-sort-order.sync="currentSortOrder"ref="mytable" md-card md-fixed-header>
 		<md-chip v-if="filesize">{{ readableFilesize() }}<!--needed for the inner filesize container to update--></md-chip>
 		<md-table-toolbar>
 			<h1 class="md-title" >Debug.log <md-chip v-if="filesize">{{ readableFilesize() }}</md-chip></h1>
-
 			<div class="md-toolbar-section-start">
 			</div>
 			<md-field md-clearable class="md-toolbar-section-end">
-				<md-input placeholder="Filter Rows (Regex)" v-model="search" @input="searchOnTable" />
+				<md-input placeholder="Filter Rows (Regex)" v-model="search" @input="searchTable" />
 			</md-field>
 			<div class="md-toolbar-section-end">
 				<md-switch v-model="autoreload" class="md-primary">Autoreload</md-switch>
@@ -287,7 +286,7 @@ class Pelv_Log_Handler {
 		</md-table-toolbar>
 		<md-table-empty-state v-if="filesize && search"
 			md-label="Nothing found"
-			:md-description="`Nothing found for this '${search}' query. Try a different search term or create a matching error ;)`">
+			:md-description="`No results for your search: '${search}'. Try a different search term or create a matching error ;)`">
 		</md-table-empty-state>
 		<md-table-empty-state v-if="!filesize"
 			md-label="Nothing found"
@@ -326,9 +325,11 @@ Vue.use(VueMaterial.default)
 var app = new Vue({
 	el: '#app',
 	data: () => ({
+		currentSort: 'time',
+		currentSortOrder: 'desc',
 		search: null,
-		searched: [],
-		entries: [],
+		rowsRaw: [],
+		rowsDisplay: [],
 		filesize: 0,
 		loading: false,
 		delete: '',
@@ -352,26 +353,44 @@ var app = new Vue({
 			} else {
 				return (Math.round(this.filesize /102 ) /10) + ' KB';
 			}
-
 		},
 		readableDateTime( dateTimeString ){
 			let date = new Date(dateTimeString);
 			return isNaN( date ) ? dateTimeString : date.toLocaleString();
 		},
-		searchOnTable () {
+		filterSearch(){
 			if ( this.search == "" ){
-				this.searched = this.entries
+				return this.rowsRaw
 			} else {
-				this.searched = searchByName(this.entries, this.search)
+				return searchByName(this.rowsRaw, this.search)
 			}
 		},
-		handleErrors(response){
-			this.entries = response.data
+		searchTable () {
+			this.rowsDisplay = this.filterSearch();
+		},
+		compareEntries() {
+			const sortBy = this.currentSort
+			const multiplier = this.currentSortOrder === 'desc' ? -1 : 1;
+			return ( a, b ) => {
+				const aAttr = a[sortBy];
+				const bAttr = b[sortBy];
+				if (aAttr === bAttr) {
+					return 0
+				}
+				else if (typeof aAttr === 'number' && typeof bAttr === 'number') {
+					return (aAttr - bAttr) * multiplier // numerical compare, negate if descending
+				}
+				return String(aAttr).localeCompare(String(bAttr)) * multiplier;
+			}
+		},
+		setNewData(response){
+			this.rowsRaw = response.data
 			this.loading = false
-			this.searchOnTable()
+			this.rowsDisplay = this.filterSearch();
+			this.rowsDisplay.sort( this.compareEntries() );
 		},
 		getLog(comp){
-			axios.get('?get_log').then( response => (comp.handleErrors(response)))
+			axios.get('?get_log').then( response => (comp.setNewData(response)))
 		},
 		update(comp){
 			if ( ! comp.autoreload | comp.documentHidden ){
@@ -387,7 +406,7 @@ var app = new Vue({
 				let size = response.data
 				if ( typeof response.data == 'string'){
 					console.log('something went wrong...')
-					comp.searched = [];
+					comp.rowsDisplay = [];
 					comp.error = true
 					comp.errorMessage = response.data;
 					comp.loading = false
@@ -411,7 +430,7 @@ var app = new Vue({
 			})
 		},
 		deleteLog(){
-			this.searched = [];
+			this.rowsDisplay = [];
 			this.filesize = 0;
 			axios.get('?delete_log').then(response => (this.delete.data = response))
 		}
