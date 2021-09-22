@@ -446,7 +446,7 @@ var app = new Vue({
 	.md-table-cell[error*="Warning"] { background-color: #FFA66F; }
 	.md-table-cell[error*="Fatal"], .md-table-cell[error*="error"] { background-color: #d05f5f !important}
 	pre { font-family: 'Roboto Mono', monospace; margin: 0.2rem }
-	.md-table-cell { height: auto }
+	.md-table-cell { height: auto; vertical-align: top; }
 	.cell-time { min-width: 200px }
 	.md-table-fixed-header {max-width: 100%}
 	.message {white-space: pre;}
