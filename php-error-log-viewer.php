@@ -95,13 +95,23 @@ class Pelv_Log_Handler {
 		}
 	}
 
+	/**
+	 * Read the log-file.
+	 *
+	 * @return string|false The read string or false on failure.
+	 */
 	public function get_file() {
-
-		$myfile = fopen( $this->settings['file_path'], 'r' ) or die( 'Unable to open file!' );
-		return fread( $myfile, $this->get_filesize() );
+		$my_file = fopen( $this->settings['file_path'], 'r' );
+		$size    = $this->get_size();
+		return ( $my_file && $size ) ? fread( $my_file, $size ) : false;
 	}
 
-	public function get_filesize() {
+	/**
+	 * Get the size of the log-file.
+	 *
+	 * @return int|false The size of the log file in bytes or false.
+	 */
+	public function get_size() {
 		if ( empty( $this->filesize ) ) {
 			$this->filesize = filesize( $this->settings['file_path'] );
 		}
@@ -117,10 +127,10 @@ class Pelv_Log_Handler {
 		if ( ! file_exists( $this->settings['file_path'] ) ) {
 			return 'The file you specified does not exist (' . $this->settings['file_path'] . ')';
 		}
-		if ( 0 == $this->get_filesize() ) {
+		if ( 0 == $this->get_size() ) {
 			return 'Your log file is empty.';
 		}
-		$mbs = $this->get_filesize() / 1024 / 1024; // in MB.
+		$mbs = $this->get_size() / 1024 / 1024; // in MB.
 		if ( $mbs > 100 ) {
 			if ( ! isset( $_GET['ignore'] ) ) {
 				return( "Aborting. debug.log is larger than 100 MB ($mbs).
@@ -220,6 +230,9 @@ class Pelv_Log_Handler {
 	public function ajax_json_log() {
 		$this->ajax_header();
 		$file = $this->get_file();
+		if ( ! $file ) {
+			die( "File is empty or can't be opened." );
+		}
 		$this->parse( $file ); // writes to $this->content. preg_replace_callback is odd.
 		echo( json_encode( array_values( $this->content ) ) );
 		die();
@@ -233,7 +246,7 @@ class Pelv_Log_Handler {
 
 	public function ajax_filesize() {
 		$this->ajax_header();
-		echo json_encode( $this->get_filesize() );
+		echo json_encode( $this->get_size() );
 		die();
 	}
 }
