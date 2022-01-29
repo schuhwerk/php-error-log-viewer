@@ -1,8 +1,5 @@
 # PHP Error Log Viewer
 
-
-![Build Status](https://travis-ci.org/schuhwerk/php-error-log-viewer.svg?branch=master)
-
 A GUI for your php log files which groups similar errors. Written in PHP and Vue.js.
 
  - Reads the specified log file and automatically shows you new errors when they appear.
