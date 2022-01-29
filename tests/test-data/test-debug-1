@@ -1,0 +1,29 @@
+[13-Jun-2021 10:30:08 Europe/Berlin] PHP Fatal error:  require_once(): Failed opening required
+[13-Jun-2021 10:30:08 Europe/Berlin] WARNING: ...
+[13-Jun-2021 10:30:08 Europe/Berlin] WARNING: ...
+[13-Jun-2021 10:30:08 Europe/Berlin] INFO: ...
+[13-Jun-2021 10:30:10 Europe/Berlin] PHP Fatal error:  require_once(): Failed opening required
+[05-Dec-2021 15:12:04 Europe/Berlin] PHP Notice:  Undefined index: version in /srv/www/spaces/current/web/app/plugins/s2/s2.php on line 4394
+[05-Dec-2021 15:12:04 Europe/Berlin] PHP Stack trace:
+[05-Dec-2021 15:12:04 Europe/Berlin] PHP   1. {main}() /srv/www/spaces/current/web/index.php:0
+[05-Dec-2021 15:12:04 Europe/Berlin] PHP   2. require() /srv/www/spaces/current/web/index.php:5
+[05-Dec-2021 15:12:04 Europe/Berlin] PHP   3. require_once() /srv/www/spaces/current/web/wp/wp-blog-header.php:13
+[05-Dec-2021 15:12:04 Europe/Berlin] PHP   4. require_once() /srv/www/spaces/current/web/wp/wp-load.php:42
+[05-Dec-2021 15:12:04 Europe/Berlin] PHP   5. require_once() /srv/www/spaces/current/web/wp-config.php:24
+[05-Dec-2021 15:12:04 Europe/Berlin] PHP   6. do_action() /srv/www/spaces/current/web/wp/wp-settings.php:523
+[05-Dec-2021 15:12:04 Europe/Berlin] PHP   7. WP_Hook->do_action() /srv/www/spaces/current/web/wp/wp-includes/plugin.php:478
+[05-Dec-2021 15:12:04 Europe/Berlin] PHP   8. WP_Hook->apply_filters() /srv/www/spaces/current/web/wp/wp-includes/class-wp-hook.php:312
+[05-Dec-2021 15:12:04 Europe/Berlin] PHP   9. s2class->s2() /srv/www/spaces/current/web/wp/wp-includes/class-wp-hook.php:288
+[29-Jan-2022 16:02:47 Europe/Berlin] Array
+(
+    [wpdb] => wpdb Object
+        (
+            [show_errors] => 
+            [suppress_errors] => 
+            [last_error] => 
+            [num_queries] => 37
+            [num_rows] => 1
+        )
+
+)
+[29-Jan-2022 16:02:48 Europe/Berlin] PHP Fatal error:  require_once(): Failed opening required

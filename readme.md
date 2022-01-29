@@ -1,23 +1,27 @@
 # PHP Error Log Viewer
 
-A single-file GUI for your php log files which groups similar errors. Written in PHP and Vue.js.
+
+![Build Status](https://travis-ci.org/schuhwerk/php-error-log-viewer.svg?branch=master)
+
+A GUI for your php log files which groups similar errors. Written in PHP and Vue.js.
 
  - Reads the specified log file and automatically shows you new errors when they appear.
  - Groups errors with similar text. This is far from perfect and just works with the (default) log-format like:  
    ```[12-Jun-2030 12:58:55] PHP Notice: ...```
  - Can be configured so clicking on an error will directly bring you to the mentioned file and line in vscode ([more below](#linking)).
+ - Requires > PHP 7.4
 
 ## Disclaimer
  - This contains code for deleting your log-file.
  - Might be heavy for you server for large log files (regexp-parsing).
  - It is meant for development-environments.
- - Created for log-files in the format ``[31-Mar-2021 14:25:56 UTC] PHP Notice: ...``
+ - Created for log-files in the format ``[31-Mar-2021 14:25:56 UTC] PHP Notice: ...`` (nginx logs are currently not supported).
  - There is still room for improvement (especially where the log-file is parsed).
  - It does not work offline, as we rely on [cdns](https://en.wikipedia.org/wiki/Content_delivery_network) to load dependencies like vue. 
 
 ## Getting Started
 
-Just copy the file next to your debug.log.
+Just copy the folder next to your debug.log.
 
 or
 ```bash
@@ -26,8 +30,8 @@ composer require-dev schuhwerk/php-error-log-viewer
 
 ## Usage
 
-Open the file in your browser (like http://mydomain.local/php-error-log-viewer.php)
-![Screenshot of the viewer interface](screenshot.png)
+Open the folder in your browser (like http://mydomain.local/php-error-log-viewer)
+![Screenshot of the viewer interface](php-error-log-screenshot.png)
 
 
 ## Settings
@@ -52,4 +56,12 @@ This works for the following samples:
 - <mark>/srv/www/web/app/themes/defaultspace/functions.php(605)</mark>: get_post_card(Object(WP_Post), Array)
 - PHP Fatal error:  Uncaught TypeError: ..., called in <mark>C:\foo\bar/themes/defaultspace/functions.php on line 605</mark> 
 - ... and defined in <mark>C:\foo\bar/themes/defaultspace/functions.php:63</mark>
+
+## Ideas
+- This was a single-file gui. As it went bigger we separated files (to improve readability). There could be a build-step which brings things back to a single file (like [adminer](https://github.com/vrana/adminer) uses).
+- Update to vue3
+- Use vuetify instead vue-material.
+- Make offline useable.
+- Find a way to keep stack-traces together (while sorting)
+
 

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<ruleset name="PHP_CodeSniffer">
+
+	<description>PHPCS configuration file.</description>
+	<!-- check all files in the app directory, feel free to add more files with:
+<file>FOLDER NAME</file>
+-->
+	<file>.</file>
+	<arg name="extensions" value="php"/>
+	<exclude-pattern>vendor/</exclude-pattern>
+
+	<!-- ignore warnings and display ERRORS only -->
+	<!-- <arg value="np"/> -->
+
+	<!-- Our base rule: set to PSR12-->
+	<rule ref="PSR12"/>
+
+</ruleset>
