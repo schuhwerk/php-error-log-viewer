@@ -91,9 +91,6 @@ class LogHandler
             return "The file ({$this->settings['file_path']}) was not found. " .
             'You can specify a different file/location in the settings (check readme.md).';
         }
-        if (0 == $this->get_size()) {
-            return 'Your log file is empty.';
-        }
         $mbs = $this->get_size() / 1024 / 1024; // in MB.
         if ($mbs > 100) {
             if (! isset($_GET['ignore'])) {
