@@ -1,5 +1,7 @@
 # PHP Error Log Viewer
 
+![PHP Tests](https://github.com/schuhwerk/php-error-log-viewer/actions/workflows/php.yml/badge.svg)
+
 A GUI for your php log files which groups similar errors. Written in PHP and Vue.js.
 
  - Reads the specified log file and automatically shows you new errors when they appear.
