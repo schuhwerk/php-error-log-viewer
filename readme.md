@@ -55,6 +55,17 @@ This works for the following samples:
 - <mark>/srv/www/web/app/themes/defaultspace/functions.php(605)</mark>: get_post_card(Object(WP_Post), Array)
 - PHP Fatal error:  Uncaught TypeError: ..., called in <mark>C:\foo\bar/themes/defaultspace/functions.php on line 605</mark> 
 - ... and defined in <mark>C:\foo\bar/themes/defaultspace/functions.php:63</mark>
+- ✨Tip: Use this (php) [snippet in vscode](https://code.visualstudio.com/docs/editor/userdefinedsnippets) (and enjoy the links):
+  ```json
+  "Log to error log": {
+		"prefix": "error_log",
+		"body": [
+			"error_log( \"$1\" . __FILE__ . ' on line ' . __LINE__ . \"\\n\" . print_r( $2, true ) );",
+			"$4"
+		],
+		"description": "Log array/object to error log."
+	}
+  ```
 
 ## Ideas
 - This was a single-file gui. As it went bigger we separated files (to improve readability). There could be a build-step which brings things back to a single file (like [adminer](https://github.com/vrana/adminer) uses).
