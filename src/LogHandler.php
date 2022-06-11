@@ -45,14 +45,40 @@ class LogHandler
      */
     public $default_settings = array(
         'file_path'           => '../debug.log',
-        'vscode_links'        => true, // Stack trace references files. link them to your repo (https://code.visualstudio.com/docs/editor/command-line#_opening-vs-code-with-urls).
-        'vscode_path_search'  => '', // This is needed if you develop on a vm. like '/srv/www/...'.
-        'vscode_path_replace' => '', // The local path to your repo. like 'c:/users/...'.
+        /**
+         * Stack trace references files. Make those links clickable.
+         * Parts in double curly braces are placeholders.
+         * @see https://code.visualstudio.com/docs/editor/command-line#_opening-vs-code-with-urls).
+         */
+        'link_template'        => 'vscode://file/{{path}}:{{line_number}}',
+        'link_path_search'  => '', // This is needed if you develop on a vm. like '/srv/www/...'.
+        'link_path_replace' => '', // The local path to your repo. like 'c:/users/...'.
     );
 
     public function __construct($settings)
     {
-        $this->settings = array_merge($this->default_settings, $settings);
+        $this->settings = array_merge($this->default_settings, $this->handle_deprecated_settings($settings));
+    }
+
+    /**
+     * Settings-keys were previously named vscode_*. We generalized that.
+     * To support backwards-compatibility we rename the keys (vscode_foo -> code_foo).
+     *
+     * @param array[] $s settings.
+     * @return array []
+     */
+    private function handle_deprecated_settings($s)
+    {
+        if (isset($s['vscode_links']) && true == $s['vscode_links']) {
+            $s['link_template'] = $this->default_settings['link_template'];
+        }
+        foreach ($s as $key => $value) {
+            if (0 === strpos($key, 'vscode_')) {
+                $new_key = str_replace('vscode_', 'link_', $key);
+                $s[ $new_key ] = ! isset($s[ $new_key ]) ? $value : $s[ $new_key ];
+            }
+        }
+        return $s;
     }
 
     /**
@@ -124,18 +150,31 @@ class LogHandler
         return array_values($this->content);
     }
 
-    public function link_vscode_files($string)
+    public function link_files($string)
     {
-        $string = preg_replace_callback('$([A-Z]:)?([\\\/][^:(\s]+)(?: on line |[:\(])([0-9]+)\)?$', array( $this, 'vscode_link_filter' ), $string);
+        $string = preg_replace_callback('$([A-Z]:)?([\\\/][^:(\s]+)(?: on line |[:\(])([0-9]+)\)?$', array( $this, 'link_filter' ), $string);
         return $string;
     }
 
-    public function vscode_link_filter($matches)
+    /**
+     *
+     * @param array $matches
+     *      0 => full match
+     *      1 => hard-drive ( windows only, like "C:" )
+     *      2 => path (from: on line")
+     *      3 => line number
+     * @return string|bool
+     */
+    public function link_filter($matches)
     {
-        $link = 'vscode://file/' . $matches[1] . $matches[2] . ':' . $matches[3];
-        // $root = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : $_SERVER['DOCUMENT_ROOT'];
-        // $val  = parse_url( $root, PHP_URL_QUERY );
-        $link = str_replace($this->settings['vscode_path_search'], $this->settings['vscode_path_replace'], $link);
+        $template = array(
+            'path' => str_replace($this->settings['link_path_search'], $this->settings['link_path_replace'], $matches[1] . $matches[2]),
+            'line_number' => $matches[3]
+        );
+        $link = $this->settings['link_template'];
+        foreach ($template as $key => $value) {
+            $link = str_replace("{{" . $key . "}}", $value, $link); // apply the template.
+        }
         return "<a href='$link'>" . $matches[0] . '</a>';
     }
 
@@ -167,7 +206,7 @@ class LogHandler
         $date = date_create($arr[1]); // false if no valid date.
         $this->content[ $err_id ]['time'] = $date ? $date->format(\DateTime::ATOM) : $arr[1]; // ISO8601, readable in js
         $message = htmlspecialchars(trim($arr[2]), ENT_QUOTES);
-        $this->content[ $err_id ]['msg'] = $this->settings['vscode_links'] ? $this->link_vscode_files($message) : $message;
+        $this->content[ $err_id ]['msg'] = $this->settings['link_template'] ? $this->link_files($message) : $message;
         $this->content[ $err_id ]['cls'] = implode(
             ' ',
             array_slice(
