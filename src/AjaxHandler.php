@@ -12,6 +12,8 @@ namespace Php_Error_Log_Viewer;
  */
 class AjaxHandler
 {
+    public $log_handler;
+
     public function __construct($log_handler)
     {
         $this->log_handler = $log_handler;
@@ -38,8 +40,8 @@ class AjaxHandler
             return;
         }
         $file_issues = $this->log_handler->get_file_issues();
-    
-        if ( ! empty( $file_issues ) ) {
+
+        if (! empty($file_issues)) {
             $this->ajax_header();
             echo $file_issues;
             die();
@@ -58,7 +60,7 @@ class AjaxHandler
     {
         $this->ajax_header();
         $content = $this->log_handler->get_parsed_content();
-        echo( json_encode(array_values($content)) );
+        echo json_encode(array_values($content));
         die();
     }
 
