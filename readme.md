@@ -8,7 +8,7 @@ A GUI for your php log files which groups similar errors. Written in PHP and Vue
  - Groups errors with similar text. This is far from perfect and just works with the (default) log-format like:  
    ```[12-Jun-2030 12:58:55] PHP Notice: ...```
  - Can be configured so clicking on an error will directly bring you to the mentioned file and line in vscode ([more below](#linking)).
- - Requires > PHP 7.4
+ - Requires PHP > 7.4
 
 ## Disclaimer
  - This contains code for deleting your log-file.
