@@ -18,12 +18,19 @@
 (
     [wpdb] => wpdb Object
         (
-            [show_errors] => 
-            [suppress_errors] => 
-            [last_error] => 
+            [show_errors] =>
+            [suppress_errors] =>
+            [last_error] =>
             [num_queries] => 37
             [num_rows] => 1
         )
 
 )
 [29-Jan-2022 16:02:48 Europe/Berlin] PHP Fatal error:  require_once(): Failed opening required
+[12-Nov-2023 06:27:29 UTC] ### - options - ###
+[12-Nov-2023 06:27:29 UTC] Array
+(
+    [0] => Getränke
+    [1] => Snacks
+    [2] => Alkohol
+)

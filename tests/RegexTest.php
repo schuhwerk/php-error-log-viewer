@@ -25,7 +25,9 @@ final class EmailTest extends TestCase
             "cls" => "Fatal error", // proper class is assigned
         ));
 
-        // Make sure multiline strings (like print_r) are parsed properly.
-        $this->assertEquals(crc32($content[14]['msg']), 2230106746);
+        // Make sure multiline strings (like print_r) are parsed properly. remove newlines, so test runs in win & linux.
+        $this->assertEquals(1111982704, crc32(str_replace(["\r", "\n"], '', $content[14]['msg'])));
+
+        $this->assertStringContainsString("Snacks", $content[16]['msg']);
     }
 }
