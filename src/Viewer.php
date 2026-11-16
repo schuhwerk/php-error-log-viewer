@@ -31,7 +31,7 @@ final class Viewer
     }
 
     /**
-     * Reads php-error-log-viewer.ini from the viewer's folder, else from its grandparent (outside a composer vendor folder).
+     * Reads php-error-log-viewer.ini from the viewer's folder, else from its grandparent (for a composer install: vendor/).
      *
      * @return array<string, mixed> The settings, with absolute log paths in 'files'.
      */
@@ -45,7 +45,7 @@ final class Viewer
             }
         }
         foreach ($ini as $key => $value) {
-            if (str_starts_with($key, 'vscode_')) { // The names before links were editor-agnostic.
+            if (str_starts_with($key, 'vscode_')) { // Former names, from when links went to VS Code only.
                 $ini['link_' . substr($key, 7)] ??= $value;
             }
         }

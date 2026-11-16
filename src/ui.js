@@ -1,7 +1,7 @@
 'use strict';
 
 const LEVELS = ['error', 'warning', 'notice', 'deprecated', 'info', 'debug', ''];
-const PAGE = 300; // Rows drawn until all are asked for.
+const PAGE = 300; // Rows drawn until "Show all" is pressed.
 const INTERVAL = 3000;
 // A path with a line number: "/a/b.php(12)", "/a/b.php:12", "C:\a\b.php on line 12".
 const PATH = /((?:[A-Z]:)?[\\/][^:(\s]+)(?: on line |[:(])(\d+)\)?/g;
@@ -229,7 +229,7 @@ $('notify').checked = notifiable && prefs.notify && Notification.permission === 
 if (notifiable) $('notify').parentNode.title = 'Notifies about new entries that pass the filter while this tab is in the background.';
 else {
 	$('notify').parentNode.append(' (needs HTTPS or localhost)');
-	$('notify').parentNode.title = 'Browsers allow notifications over HTTPS or on localhost only. To get them here: run "php -S localhost:8799" in the viewer\'s folder and open http://localhost:8799/. Or, in Chrome, list this address under chrome://flags/#unsafely-treat-insecure-origin-as-secure.';
+	$('notify').parentNode.title = 'Browsers allow notifications over HTTPS or on localhost only. To get them here: run "php -S localhost:8799" in the viewer\'s folder and open it through http://localhost:8799/. Or, in Chrome, list this address under chrome://flags/#unsafely-treat-insecure-origin-as-secure.';
 }
 $('notify').onchange = async event => {
 	prefs.notify = event.target.checked && await Notification.requestPermission() === 'granted';

@@ -69,9 +69,9 @@ Logs hold sensitive data, and this tool can empty them. It is meant for developm
 
 Paths followed by a line number become links. `link_path_search` and `link_path_replace` translate a server path into a local one (a VM, a container). These are recognized:
 
-- `/srv/www/web/app/themes/defaultspace/functions.php(605)`: get_post_card(Object(WP_Post), Array)
-- ... called in `C:\foo\bar/themes/defaultspace/functions.php on line 605`
-- ... and defined in `C:\foo\bar/themes/defaultspace/functions.php:63`
+- `/srv/www/web/app/themes/mytheme/functions.php(605)`: get_post_card(Object(WP_Post), Array)
+- ... called in `C:\foo\bar/themes/mytheme/functions.php on line 605`
+- ... and defined in `C:\foo\bar/themes/mytheme/functions.php:63`
 
 A [VS Code snippet](https://code.visualstudio.com/docs/editor/userdefinedsnippets) that logs with such a path:
 
