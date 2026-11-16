@@ -1,4 +1,6 @@
 vendor/
+dist/
 composer.lock
-.phpunit.result.cache
 *.code-workspace
+php-error-log-viewer.ini
+handover.md

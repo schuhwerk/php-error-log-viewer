@@ -1,28 +1,16 @@
 <?php
 
 /**
- * PHP Error Log Viewer.
- * Check readme.md for more information.
+ * PHP Error Log Viewer, run from its sources. `php build.php` packs the same into one file.
  *
- * Disclaimer
- * - This contains code for reading & deleting your log-file.
- * - Log files might contain sensitive information.
- * - It is meant for development-environments
+ * It shows log files, which may hold sensitive data, and can empty them: see "Security" in readme.md.
  */
+
+declare(strict_types=1);
 
 namespace Php_Error_Log_Viewer;
 
-require_once 'src/LogHandler.php';
-require_once 'src/AjaxHandler.php';
+require __DIR__ . '/src/Parser.php';
+require __DIR__ . '/src/Viewer.php';
 
-$path = 'php-error-log-viewer.ini';
-// search settings directly outside the vendor folder.
-$settings = file_exists('../../' . $path) ? parse_ini_file('../../' . $path) : array();
-// search settings in the same folder as the file.
-$settings = file_exists($path) ? parse_ini_file($path) : $settings;
-
-$log_handler = new LogHandler($settings);
-$ajax_handler = new AjaxHandler($log_handler);
-$ajax_handler->handle_ajax_requests();
-
-readfile('./src/error-log-viewer-frontend.html');
+(new Viewer(Viewer::settings(__DIR__), static fn(): string => Viewer::assemble(__DIR__ . '/src')))->run();

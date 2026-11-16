@@ -1,0 +1,12 @@
+
+[17-Jun-2025 01:38:38]  [pool www] pid 49563
+script_filename = /www/wwwroot/bt/public/index.php
+[0x00007f4ef9417890] curl_exec() /www/wwwroot/bt/app/lib/Btapi.php:216
+[0x00007f4ef94175d0] curl() /www/wwwroot/bt/app/lib/Btapi.php:23
+[0x00007f4ef94174b0] get_config() /www/wwwroot/bt/app/controller/Admin.php:148
+
+[17-Jun-2025 01:39:12]  [pool www] pid 49601
+script_filename = /www/wwwroot/bt/public/index.php
+[0x00007f4ef9418890] curl_exec() /www/wwwroot/bt/app/lib/Btapi.php:216
+[0x00007f4ef94185d0] curl() /www/wwwroot/bt/app/lib/Btapi.php:23
+[0x00007f4ef94184b0] get_config() /www/wwwroot/bt/app/controller/Admin.php:148

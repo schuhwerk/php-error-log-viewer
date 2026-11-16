@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Log Viewer</title>
+<link rel="icon" href="data:,">
+<style nonce="{{nonce}}">/*css*/</style>
+</head>
+<body>
+<header>
+	<select id="file" aria-label="Log file"></select>
+	<output id="size"></output>
+	<span id="levels"></span>
+	<input id="filter" type="search" placeholder="Filter (regex)" aria-label="Filter messages" autocomplete="off" spellcheck="false">
+	<label><input id="auto" type="checkbox"> Auto reload</label>
+	<label><input id="notify" type="checkbox"> Notify</label>
+	<button id="clear" type="button" disabled>Empty file</button>
+</header>
+<main>
+	<table>
+		<thead>
+			<tr>
+				<th><button type="button" data-sort="n">Count</button></th>
+				<th><button type="button" data-sort="t">Time</button></th>
+				<th><button type="button" data-sort="lvl">Level</button></th>
+				<th><button type="button" data-sort="msg">Message</button></th>
+			</tr>
+		</thead>
+		<tbody id="rows"></tbody>
+	</table>
+	<p id="status" role="status">Loading…</p>
+	<button id="more" type="button" hidden></button>
+</main>
+<script type="application/json" id="config">{{config}}</script>
+<script nonce="{{nonce}}">/*js*/</script>
+</body>
+</html>

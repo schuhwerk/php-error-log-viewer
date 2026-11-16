@@ -1,0 +1,13 @@
+[24-Sep-2019 16:09:40] NOTICE: fpm is running, pid 1
+[24-Sep-2019 16:09:40] NOTICE: ready to handle connections
+[24-Sep-2019 16:09:44] NOTICE: fpm is running, pid 7
+[24-Sep-2019 16:09:46] WARNING: [pool www] child 21 said into stderr: "NOTICE: PHP message: 0.00017595291137695 :       Auto unscribing after 1 message is received"
+[24-Sep-2019 16:09:47] WARNING: [pool www] child 22 said into stderr: "NOTICE: PHP message: 0.00017595291137695 :       Auto unscribing after 1 message is received"
+[24-Sep-2019 16:09:48] WARNING: [pool www] child 1711 said into stderr: "NOTICE: PHP message: PHP Fatal error:  Uncaught Symfony\Component\Debug\Exception\UndefinedMethodException: Attempted to call an undefined method named "getQuery" of class "Apisearch\Result\Result"."
+[24-Sep-2019 16:09:48] WARNING: [pool www] child 1711 said into stderr: "Did you mean to call "getQueryUUID"? in /var/www/html/vendor/apisearch-io/sylius-apisearch-plugin/src/Url/UrlBuilder.php:272"
+[24-Sep-2019 16:09:48] WARNING: [pool www] child 1711 said into stderr: "Stack trace:"
+[24-Sep-2019 16:09:48] WARNING: [pool www] child 1711 said into stderr: "#0 /var/www/html/vendor/apisearch-io/sylius-apisearch-plugin/src/Url/UrlBuilder.php(174): Apisearch\SyliusApisearchPlugin\Url\UrlBuilder->generateQueryUrlParameters(Object(Apisearch\Result\Result))"
+[24-Sep-2019 16:09:48] WARNING: [pool www] child 1711 said into stderr: "#1 /var/www/html/var/cache/dev/twig/94/9488b7b8bf9c970a32a42ec6045ed387d6eb88adc1399a290d873cfa2021a24f.php(338): Apisearch\SyliusApisearchPlugin\Url\UrlBuilder->removePriceRangeFilter(Object(Apisearch\Result\Result))"
+[24-Sep-2019 16:09:48] WARNING: [pool www] child 1711 said into stderr: "#2 /var/www/html/var/cache/dev/twig/ee/eecbf499dfbc1c7fa1289ce99db78b79924380b135c373a29d966b0233acddcf.php(279): __TwigTemplate_d73dcfb972854ff689b32eeaac8b66fe4cf07dac5cd1f4adc1f84828441fdb76->macro_printPriceRange(Object(Apisearch\Result\Result))"
+[24-Sep-2019 16:09:48] WARNING: [pool www] child 1711 said into stderr: "#3 /var/www/html/..."
+[24-Sep-2019 16:10:00] WARNING: [pool www] server reached pm.max_children setting (5), consider raising it
