@@ -64,6 +64,7 @@ Logs hold sensitive data, and this tool can empty them. It is meant for developm
 - A client picks a log by its position in `files`, never by path.
 - Other websites cannot read or empty your log through your browser: requests need a header that a foreign page cannot send, and emptying is a POST.
 - Log content is inserted as text, never as HTML, and the page allows no scripts or styles but its own (Content Security Policy).
+- On the command line, control characters from the log are printed as `\x1b` and the like, so an escape sequence in a message cannot act on your terminal.
 
 ## Linking
 
@@ -89,11 +90,20 @@ A [VS Code snippet](https://code.visualstudio.com/docs/editor/userdefinedsnippet
 
 ## Command line
 
+For a terminal, a script or a coding agent: the groups as text, one line each, newest last.
+
 ```bash
-php index.php [file]   # one line per group: count, level, time, first line
+php index.php [options] [file]        # without a file: the first configured one
+php index.php --since='5 min ago'     # what a request just logged, counted from then on
+php index.php --level=error --full --last=3   # the newest three errors with their stack traces
+php index.php --strip=/srv/www/current/ --width=0   # short paths, nothing cut
 ```
 
-Without a file it reads the first configured one.
+```
+    3  error       2022-01-29 15:02:48  PHP Fatal error:  require_once(): Failed opening required
+```
+
+Count, level (`-` for none), time of the latest occurrence, first line. A long line is cut in the middle, so its `on line N` stays. `--help` lists the options. Exit status: 0 (also with nothing to show), 1 when the file cannot be read, 2 for wrong options.
 
 ## Development
 

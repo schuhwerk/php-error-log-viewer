@@ -50,6 +50,11 @@ final class Parser
     /** @var array{string, ?int} The last timestamp parsed: neighbouring lines mostly share theirs. */
     private array $clock = ['', null];
 
+    /** @param ?int $since Drops entries older than this Unix time, and those without a time. */
+    public function __construct(private ?int $since = null)
+    {
+    }
+
     public function line(string $line): void
     {
         $line = rtrim($line, "\r\n");
@@ -94,6 +99,9 @@ final class Parser
         }
         [$time, $level, $message] = $this->entry;
         $this->entry = null;
+        if ($this->since !== null && ($time ?? PHP_INT_MIN) < $this->since) {
+            return;
+        }
         $message = rtrim(ltrim(preg_replace(self::REQUEST, "\n", $message) ?? $message, "\n"));
         $id = hash('xxh3', preg_replace(self::NOISE, '', $message) ?? $message);
 

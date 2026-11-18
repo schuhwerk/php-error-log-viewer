@@ -124,8 +124,29 @@ unlink("$dir/php-error-log-viewer.ini");
 rmdir($dir);
 check('settings: default', Viewer::settings('/x/y')['files'], ['/x/y/../debug.log']);
 
-// The single file behaves like the sources.
+// The command line.
 $root = dirname(__DIR__);
+$cli = static function (string $args) use ($root): array {
+    exec('php ' . escapeshellarg("$root/index.php") . " $args 2>/dev/null", $lines, $status);
+    return [$status, $lines];
+};
+$php = escapeshellarg(__DIR__ . '/fixtures/php.log');
+[$status, $lines] = $cli($php);
+check('cli: one line per group, newest last', [$status, count($lines), substr($lines[6], 0, 40)], [0, 7, '    1  -           2023-11-12 06:27:29  ']);
+check('cli: --level, with none for messages without one', $cli("--level=error,none $php")[1][1], '    3  error       2022-01-29 15:02:48  PHP Fatal error:  require_once(): Failed opening required');
+check('cli: --since counts only what follows', $cli("--since='2022-01-29 15:02:48' --level=error $php")[1], ['    1  error       2022-01-29 15:02:48  PHP Fatal error:  require_once(): Failed opening required']);
+check('cli: --width cuts in the middle, so the line number stays', substr($cli("--width=60 --level=notice $php")[1][0], 40), 'PHP Notice:  Undefined index: version i…/s2.php on line 4394');
+check('cli: --strip shortens paths', str_ends_with($cli("--strip=/var/www/html/ --level=notice $php")[1][0], 'in web/app/plugins/s2/s2.php on line 4394'));
+check('cli: --last keeps the newest groups', array_map(static fn(string $line): string => substr($line, 40), $cli("--last=2 $php")[1]), ['### - options - ###', 'Array']);
+check('cli: --full adds the rest, indented', array_slice($cli("--full --level=notice $php")[1], 1, 2), ['    PHP Stack trace:', '    PHP   1. {main}() /var/www/html/web/index.php:0']);
+$file = tempnam(sys_get_temp_dir(), 'log');
+file_put_contents($file, "[15-Nov-2026 10:00:00 UTC] PHP Notice:  a\e]52;c;eA==\x07b\rc\xC2\x9B2Jd\te\n  trace \e[8m\n");
+check('cli: control characters are shown, not run', $cli('--full ' . escapeshellarg($file))[1], ['    1  notice      2026-11-15 10:00:00  PHP Notice:  a\\x1b]52;c;eA==\\x07b\\x0dc\\x9b2Jd' . "\te", '      trace \\x1b[8m']);
+unlink($file);
+check('cli: a wrong option is named first', (string) shell_exec('php ' . escapeshellarg("$root/index.php") . ' --level=fatal 2>&1 | head -1'), "--level: no level fatal.\n");
+check('cli: wrong options, a missing file', [$cli("--bogus $php")[0], $cli('--level=fatal')[0], $cli('/nonexistent.log')[0]], [2, 2, 1]);
+
+// The single file behaves like the sources.
 exec('php ' . escapeshellarg("$root/build.php"), $output, $status);
 $run = static fn(string $entry): string => (string) shell_exec('php ' . escapeshellarg("$root/$entry") . ' ' . escapeshellarg(__DIR__ . '/fixtures/php.log'));
 check('build', [$status, $run('dist/php-error-log-viewer.php')], [0, $run('index.php')]);

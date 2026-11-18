@@ -8,7 +8,7 @@ use RuntimeException;
 
 /**
  * Settings, access control and the three requests: the page, a log's new entries, emptying a log.
- * From the command line it prints a log's groups instead.
+ * From the command line it prints a log's groups instead: `php index.php --help`.
  */
 final class Viewer
 {
@@ -21,6 +21,24 @@ final class Viewer
         'password' => '',
         'max_mb' => 32,
     ];
+
+    private const array LEVELS = ['error', 'warning', 'notice', 'deprecated', 'info', 'debug', 'none'];
+
+    private const string USAGE = <<<'TXT'
+        Usage: php index.php [options] [file]
+        One line per group of equal messages, newest last: count, level, time of the latest, first line.
+        Without a file it reads the first one in the settings.
+
+          --since=TIME    only entries from TIME on, and counts only those (what strtotime() reads: '10 min ago')
+          --level=LIST    only these levels, comma-separated: error,warning,notice,deprecated,info,debug,none
+          --strip=PREFIX  remove PREFIX from messages, e.g. the server's root for short paths
+          --width=N       cut the first line to N characters in the middle, so its "on line N" stays (default 200, 0: none)
+          --last=N        only the newest N groups
+          --full          the whole message below its line (stack traces, dumps), uncut
+
+        Exit status: 0, also with nothing to show; 1 the file cannot be read; 2 wrong options.
+
+        TXT;
 
     /**
      * @param array<string, mixed> $settings As settings() returns them.
@@ -69,8 +87,7 @@ final class Viewer
     public function run(): void
     {
         if (PHP_SAPI === 'cli') {
-            $this->cli($_SERVER['argv'][1] ?? $this->settings['files'][0]);
-            return;
+            exit($this->cli());
         }
         header('Cache-Control: no-store');
         header('X-Content-Type-Options: nosniff');
@@ -100,7 +117,7 @@ final class Viewer
      * @return array{size: int, from: int, to: int, reset: bool, writable: bool, rows: list<array<string, mixed>>}
      *         'from'..'to' is the byte range read; 'reset' says the file shrank, so what the caller holds is void.
      */
-    public function read(string $file, int $from): array
+    public function read(string $file, int $from, ?int $since = null): array
     {
         $handle = is_file($file) && is_readable($file) ? fopen($file, 'rb') : false;
         if (!$handle) {
@@ -118,7 +135,7 @@ final class Viewer
             fseek($handle, $start);
         }
 
-        $parser = new Parser();
+        $parser = new Parser($since);
         $to = $start;
         // The length bounds memory: a longer line arrives in pieces.
         while (($line = fgets($handle, 65536)) !== false) {
@@ -229,14 +246,85 @@ final class Viewer
         echo json_encode($data, JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
-    /** One line per group, oldest first: count, level, time, first line. */
-    private function cli(string $file): void
+    /** Prints a log's groups as USAGE describes. @return int The exit status. */
+    private function cli(): int
     {
-        $rows = $this->read($file, 0)['rows'];
-        usort($rows, static fn(array $a, array $b): int => $a['t'] <=> $b['t']);
-        foreach ($rows as $row) {
-            $time = $row['t'] ? date('Y-m-d H:i:s', $row['t']) : str_repeat('-', 19);
-            printf("%5d  %-10s  %s  %s\n", $row['n'], $row['lvl'] ?: '-', $time, substr(strtok($row['msg'], "\n"), 0, 200));
+        $known = ['since:', 'level:', 'strip:', 'width:', 'last:', 'full', 'help'];
+        $opts = getopt('h', $known, $next);
+        $args = array_slice($_SERVER['argv'], $next);
+        // getopt() skips an option it does not know.
+        $unknown = array_filter(
+            array_slice($_SERVER['argv'], 1, $next - 1),
+            static fn(string $arg): bool => $arg[0] === '-' && $arg !== '-h'
+                && !in_array(preg_replace('~^--([^=]*).*~s', '$1', $arg), str_replace(':', '', $known), true)
+        );
+        if (isset($opts['h']) || isset($opts['help'])) {
+            echo self::USAGE;
+            return 0;
         }
+        $since = isset($opts['since']) ? strtotime((string) $opts['since']) : null;
+        $levels = isset($opts['level']) ? explode(',', (string) $opts['level']) : null;
+        $width = (string) ($opts['width'] ?? '200');
+        $last = (string) ($opts['last'] ?? '0');
+        $wrong = array_diff($levels ?? [], self::LEVELS);
+        $error = match (true) {
+            $unknown !== [] => 'Unknown option ' . reset($unknown),
+            array_filter($opts, 'is_array') !== [] => 'An option given twice',
+            $since === false => '--since: strtotime() cannot read ' . $opts['since'],
+            $wrong !== [] => '--level: no level ' . implode(', ', $wrong),
+            !ctype_digit($width . $last) => '--width and --last take a whole number',
+            count($args) > 1, str_starts_with($args[0] ?? '', '-') => 'One file at most, after the options',
+            default => '',
+        };
+        if ($error !== '') {
+            fwrite(STDERR, "$error.\n\n" . self::USAGE);
+            return 2;
+        }
+        try {
+            $rows = $this->read($args[0] ?? $this->settings['files'][0], 0, $since)['rows'];
+        } catch (RuntimeException $e) {
+            fwrite(STDERR, $e->getMessage() . "\n");
+            return 1;
+        }
+        if ($levels !== null) {
+            $rows = array_filter($rows, static fn(array $row): bool => in_array($row['lvl'] ?: 'none', $levels, true));
+        }
+        usort($rows, static fn(array $a, array $b): int => $a['t'] <=> $b['t']);
+        $rows = (int) $last ? array_slice($rows, -(int) $last) : $rows;
+        $full = isset($opts['full']);
+        foreach ($rows as $row) {
+            $message = ($opts['strip'] ?? '') === '' ? $row['msg'] : str_replace((string) $opts['strip'], '', $row['msg']);
+            $message = self::printable($message);
+            [$head, $body] = explode("\n", $message, 2) + [1 => ''];
+            $time = $row['t'] ? date('Y-m-d H:i:s', $row['t']) : str_repeat('-', 19);
+            printf("%5d  %-10s  %s  %s\n", $row['n'], $row['lvl'] ?: '-', $time, $full ? $head : self::cut($head, (int) $width));
+            if ($full && $body !== '') {
+                echo preg_replace('~^~m', '    ', $body), "\n";
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Control characters but tab and line feed, as `\x1b`: an escape sequence a log message carries (user input often)
+     * could otherwise retitle the terminal, write its clipboard or hide lines. C1 counts in UTF-8 form, as terminals read it.
+     */
+    private static function printable(string $text): string
+    {
+        return preg_replace_callback(
+            '~[\x00-\x08\x0B-\x1F\x7F]|\xC2[\x80-\x9F]~',
+            static fn(array $m): string => sprintf('\\x%02x', ord($m[0][-1])),
+            $text
+        ) ?? $text;
+    }
+
+    /** Cuts $text to $width bytes in the middle, where a message tells least: its start and its "on line N" stay. */
+    private static function cut(string $text, int $width): string
+    {
+        if ($width === 0 || strlen($text) <= $width) {
+            return $text;
+        }
+        $end = intdiv($width, 3);
+        return substr($text, 0, max(0, $width - $end - 1)) . '…' . ($end ? substr($text, -$end) : '');
     }
 }
